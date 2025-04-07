@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from ..base import BaseModel
 
 
-class Book(BaseModel):
+class BookModel(BaseModel):
 
     __tablename__ = 'books'
 

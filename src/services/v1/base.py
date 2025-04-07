@@ -96,9 +96,9 @@ class BaseManager[TModel: BaseModel](SessionMixin):
             raise
 
 
-class BaseService[TSchema: BaseSchema](SessionMixin):
+class BaseService[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
 
-    def __init__(self, session, manager: Type[BaseManager], schema: Type[TSchema]):
+    def __init__(self, session, manager: BaseManager[TModel], schema: Type[TSchema]):
         super().__init__(session)
         self.manager = manager
         self.schema = schema
