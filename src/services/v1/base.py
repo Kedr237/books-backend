@@ -1,4 +1,4 @@
-from typing import Type, List
+from typing import List, Type
 
 from sqlalchemy import delete, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -15,23 +15,18 @@ class SessionMixin:
         self.session = session
 
 
-class BaseService(SessionMixin):
-    ...
+class BaseManager[TModel: BaseModel](SessionMixin):
 
-
-class BaseManager[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
-
-    def __init__(self, session: AsyncSession, model: Type[TModel], schema: Type[TSchema]):
+    def __init__(self, session: AsyncSession, model: Type[TModel]):
         super().__init__(session)
         self.model = model
-        self.schema = schema
 
-    async def add_one(self, model: TModel) -> TSchema | None:
+    async def add_one(self, model: TModel) -> TModel | None:
         try:
             self.session.add(model)
             await self.session.commit()
             await self.session.refresh(model)
-            return self.schema(**model.to_dict())
+            return model
         except SQLAlchemyError:
             await self.session.rollback()
             # Add logger.
@@ -84,7 +79,7 @@ class BaseManager[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
         statement = select(self.model).where(self.model.id == id)
         return await self.exists(statement)
 
-    async def update(self, updated_model: TModel) -> TSchema | None:
+    async def update(self, updated_model: TModel) -> TModel | None:
         try:
             model_to_update = self.get_by_id(updated_model.id)
 
@@ -94,8 +89,22 @@ class BaseManager[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
 
             await self.session.commit()
             await self.session.refresh(model_to_update)
-            return self.schema(**model_to_update.to_dict())
+            return model_to_update.to_dict()
         except SQLAlchemyError:
             await self.session.rollback()
             # Add logger.
             raise
+
+
+class BaseService[TSchema: BaseSchema](SessionMixin):
+
+    def __init__(self, session, manager: Type[BaseManager], schema: Type[TSchema]):
+        super().__init__(session)
+        self.manager = manager
+        self.schema = schema
+
+    async def get_by_id(self, id: int) -> TSchema | None:
+        model = await self.manager.get_by_id(id)
+        if model:
+            return self.schema(**model.to_dict())
+        return None
