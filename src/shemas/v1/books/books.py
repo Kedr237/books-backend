@@ -1,4 +1,4 @@
-from ..base import BaseModelSchema, BaseCreationSchema, BaseResponseSchema
+from ..base import BaseCreationSchema, BaseModelSchema, BaseResponseSchema
 
 
 class BookSchema(BaseModelSchema):
