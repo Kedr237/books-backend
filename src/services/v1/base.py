@@ -1,4 +1,6 @@
 from typing import List, Type
+from fastapi import HTTPException, status
+
 
 from sqlalchemy import delete, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -105,6 +107,11 @@ class BaseService[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
 
     async def get_by_id(self, id: int) -> TSchema | None:
         model = await self.manager.get_by_id(id)
+
         if model:
             return self.schema(**model.to_dict())
-        return None
+        
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'{self.manager.model.__name__} with id [{id}] not found.'
+        )

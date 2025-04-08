@@ -12,6 +12,8 @@ services:
     ports:
       - ${ROOT_PORT}:${ROOT_PORT}
     restart: always
+    volumes:
+      - media_data:/app/media
     networks:
       - main-network
 
@@ -31,6 +33,7 @@ services:
 
 volumes:
   pg_data:
+  media_data:
 
 networks:
   main-network:

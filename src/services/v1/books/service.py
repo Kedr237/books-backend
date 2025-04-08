@@ -1,8 +1,9 @@
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
+from core.config import config
 from models import BookModel
-from schemas import BookSchema, BookCreationResponseSchema, BookCreationSchema
+from schemas import BookCreationResponseSchema, BookCreationSchema, BookSchema
 
 from ..base import BaseService
 from .manager import BookManager
@@ -17,8 +18,29 @@ class BookService(BaseService[BookModel, BookSchema]):
             schema=BookSchema,
         )
 
-    async def create(self, book: BookCreationSchema) -> BookCreationResponseSchema:
-        book_model = BookModel(**book.to_dict())
+    async def create(
+            self,
+            book: BookCreationSchema,
+        ) -> BookCreationResponseSchema:
+        file_path = str(config.FILES_DIR / book.file.filename)
+        cover_path = str(config.IMAGES_DIR / book.cover.filename) if book.cover else None
+
+
+        with open(file_path, 'wb') as f:
+            content = await book.file.read()
+            f.write(content)
+
+        if cover_path:
+            with open(cover_path, 'wb') as f:
+                content = await book.cover.read()
+                f.write(content)
+
+        book_model = BookModel(
+            title=book.title,
+            description=book.description,
+            cover=cover_path,
+            file=file_path,
+        )
 
         try:
             book_created = await self.manager.add_one(book_model)
@@ -31,8 +53,8 @@ class BookService(BaseService[BookModel, BookSchema]):
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f'A book with title [{book.title}] already exists.',
                 )
-        except Exception:
+        except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail='An error occurred while creating the book.',
+                detail=f'An error occurred while creating the book. {e}',
             )

@@ -9,7 +9,7 @@ from services import BookService
 def setup_router(router: APIRouter) -> None:
     @router.post('/')
     async def create_book(
-        book: BookCreationSchema,
+        book: BookCreationSchema = Depends(),
         db_session: AsyncSession = Depends(get_db_session),
     ) -> BookCreationResponseSchema:
         service = BookService(db_session)

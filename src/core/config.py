@@ -1,10 +1,16 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
+
+    BASE_DIR: Path = Path(__file__).parent.parent
+    MEDIA_DIR: Path = BASE_DIR.parent / 'media'
+    FILES_DIR: Path = MEDIA_DIR / 'files'
+    IMAGES_DIR: Path = MEDIA_DIR / 'images'
 
     TITLE: str = 'Books'
     DOCS_URL: str = '/api/docs'

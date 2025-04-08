@@ -1,3 +1,5 @@
+from fastapi import File, Form, UploadFile
+
 from ..base import BaseCreationSchema, BaseModelSchema, BaseResponseSchema
 
 
@@ -11,10 +13,10 @@ class BookSchema(BaseModelSchema):
 
 class BookCreationSchema(BaseCreationSchema):
 
-    title: str
-    description: str | None = None
-    cover: str | None = None
-    file: str
+    title: str = Form(...)
+    description: str | None = Form(None)
+    file: UploadFile = File(...)
+    cover: UploadFile | str | None = File(None)
 
 
 class BookCreationResponseSchema(BaseResponseSchema):
