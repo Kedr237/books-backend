@@ -15,8 +15,8 @@ class BookCreationSchema(BaseCreationSchema):
 
     title: str = Form(...)
     description: str | None = Form(None)
-    file: UploadFile = File(...)
     cover: UploadFile | str | None = File(None)
+    file: UploadFile = File(...)
 
 
 class BookCreationResponseSchema(BaseResponseSchema):

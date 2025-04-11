@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from . import base, books
 
-router = APIRouter(prefix='/v1', tags=['v1'])
+router = APIRouter(prefix='/v1')
 
 base.setup_router(router)
 

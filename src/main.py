@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 from core.config import config
 from core.lifespan import lifespan
-from routers import get_all_routers
+from routers import get_all_routers, setup_staticfiles
 
 app = FastAPI(
     title=config.TITLE,
@@ -14,3 +14,4 @@ app = FastAPI(
 )
 
 app.include_router(get_all_routers())
+setup_staticfiles(app)

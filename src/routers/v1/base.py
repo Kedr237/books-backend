@@ -5,6 +5,6 @@ from core.config import config
 
 
 def setup_router(router: APIRouter) -> None:
-    @router.get('/')
+    @router.get('/', include_in_schema=False)
     async def root() -> RedirectResponse:
-        return RedirectResponse(url=config.DOCS_URL)
+        return RedirectResponse(config.DOCS_URL)

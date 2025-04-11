@@ -22,24 +22,26 @@ class BookService(BaseService[BookModel, BookSchema]):
             self,
             book: BookCreationSchema,
         ) -> BookCreationResponseSchema:
-        file_path = str(config.FILES_DIR / book.file.filename)
-        cover_path = str(config.IMAGES_DIR / book.cover.filename) if book.cover else None
+        cover_name = book.cover.filename
+        file_name = book.file.filename
 
-
-        with open(file_path, 'wb') as f:
-            content = await book.file.read()
-            f.write(content)
+        cover_path = str(config.IMAGES_DIR / cover_name) if book.cover else None
+        file_path = str(config.FILES_DIR / file_name)
 
         if cover_path:
             with open(cover_path, 'wb') as f:
                 content = await book.cover.read()
                 f.write(content)
 
+        with open(file_path, 'wb') as f:
+            content = await book.file.read()
+            f.write(content)
+
         book_model = BookModel(
             title=book.title,
             description=book.description,
-            cover=cover_path,
-            file=file_path,
+            cover=cover_name,
+            file=file_name,
         )
 
         try:
