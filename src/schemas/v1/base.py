@@ -26,11 +26,5 @@ class BaseCreationSchema(BaseSchema):
 
 class BaseResponseSchema(BaseSchema):
 
-    success: bool
-    message: str = 'Successful request.'
-
-
-class BaseDeleteResponseSchema(BaseResponseSchema):
-
     success: bool = True
-    message: str = 'The entry was successfully deleted.'
+    message: str = 'Successful request.'

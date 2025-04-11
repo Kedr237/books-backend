@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from schemas import (BaseDeleteResponseSchema, BookCreationResponseSchema,
+from schemas import (BaseResponseSchema, BookCreationResponseSchema,
                      BookCreationSchema, BookSchema)
 from services import BookService
 
@@ -28,6 +28,6 @@ def setup_router(router: APIRouter) -> None:
     async def delete_book_by_id(
         id: int,
         db_session: AsyncSession = Depends(get_db_session),
-    ) -> BaseDeleteResponseSchema:
+    ) -> BaseResponseSchema:
         service = BookService(db_session)
         return await service.delete_by_id(id)

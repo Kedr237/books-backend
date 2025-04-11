@@ -1,9 +1,10 @@
-from .v1.base import BaseSchema, BaseDeleteResponseSchema
+from .v1.base import BaseSchema, BaseResponseSchema, BaseCreationSchema
 from .v1.books.books import (BookCreationResponseSchema, BookCreationSchema,
                              BookSchema)
 
 __all__ = [
-    'BaseDeleteResponseSchema',
+    'BaseCreationSchema',
+    'BaseResponseSchema',
     'BaseSchema',
     'BookCreationResponseSchema',
     'BookCreationSchema',

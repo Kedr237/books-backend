@@ -1,14 +1,13 @@
 from typing import List, Type
+
 from fastapi import HTTPException, status
-
-
 from sqlalchemy import delete, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Executable
 
 from models import BaseModel
-from schemas import BaseSchema, BaseDeleteResponseSchema
+from schemas import BaseResponseSchema, BaseSchema
 
 
 class SessionMixin:
@@ -117,7 +116,7 @@ class BaseService[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
             detail=f'The entry [{model_name}] with id [{id}] not found.'
         )
 
-    async def delete_by_id(self, id: int) -> BaseDeleteResponseSchema:
+    async def delete_by_id(self, id: int) -> BaseResponseSchema:
         model_name = self.manager.model.__name__
         try:
             exists = await self.manager.exists_by_id(id)
@@ -134,7 +133,7 @@ class BaseService[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
                     detail=f'Failed to delete {model_name}',
                 )
             
-            return BaseDeleteResponseSchema(
+            return BaseResponseSchema(
                 message=f'The entry [{model_name}] with id [{id}] was successfully deleted.',
             )
         except HTTPException:
