@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 
-from . import base, books
+from . import books
 
 router = APIRouter(prefix='/v1')
-
-base.setup_router(router)
 
 MODULES = [
     books,

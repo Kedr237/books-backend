@@ -5,6 +5,8 @@ from fastapi.staticfiles import StaticFiles
 from core.config import config
 from routers import v1
 
+from . import base
+
 ROUTER_VERSIONS = [
     v1,
 ]
@@ -12,6 +14,7 @@ ROUTER_VERSIONS = [
 
 def get_all_routers() -> APIRouter:
     router = APIRouter(prefix='/api')
+    base.setup_router(router)
 
     for version in ROUTER_VERSIONS:
         version_router = version.get_router()
