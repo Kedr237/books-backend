@@ -22,10 +22,10 @@ class BookService(BaseService[BookModel, BookSchema]):
             self,
             book: BookCreationSchema,
         ) -> BookCreationResponseSchema:
-        cover_name = book.cover.filename
+        cover_name = book.cover.filename if book.cover else None
         file_name = book.file.filename
 
-        cover_path = str(config.IMAGES_DIR / cover_name) if book.cover else None
+        cover_path = str(config.IMAGES_DIR / cover_name) if cover_name else None
         file_path = str(config.FILES_DIR / file_name)
 
         if cover_path:
@@ -55,8 +55,8 @@ class BookService(BaseService[BookModel, BookSchema]):
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f'A book with title [{book.title}] already exists.',
                 )
-        except Exception as e:
+        except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f'An error occurred while creating the book. {e}',
+                detail=f'An error occurred while creating the book.',
             )

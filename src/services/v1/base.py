@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Executable
 
 from models import BaseModel
-from schemas import BaseSchema
+from schemas import BaseSchema, BaseDeleteResponseSchema
 
 
 class SessionMixin:
@@ -107,11 +107,40 @@ class BaseService[TModel: BaseModel, TSchema: BaseSchema](SessionMixin):
 
     async def get_by_id(self, id: int) -> TSchema | None:
         model = await self.manager.get_by_id(id)
+        model_name = self.manager.model.__name__
 
         if model:
             return self.schema(**model.to_dict())
         
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'{self.manager.model.__name__} with id [{id}] not found.'
+            detail=f'The entry [{model_name}] with id [{id}] not found.'
         )
+
+    async def delete_by_id(self, id: int) -> BaseDeleteResponseSchema:
+        model_name = self.manager.model.__name__
+        try:
+            exists = await self.manager.exists_by_id(id)
+            if not exists:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f'The entry [{model_name}] with id [{id}] not found.'
+                )
+            
+            is_deleted = await self.manager.delete_by_id(id)
+            if not is_deleted:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f'Failed to delete {model_name}',
+                )
+            
+            return BaseDeleteResponseSchema(
+                message=f'The entry [{model_name}] with id [{id}] was successfully deleted.',
+            )
+        except HTTPException:
+            raise
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f'An error occurred while deleting the entry [{model_name}] with id [{id}].',
+            )
