@@ -1,7 +1,8 @@
 from .v1.base import (BaseCreationSchema, BaseResponseSchema, BaseSchema,
                       BaseUpdateSchema)
 from .v1.books.books import (BookCreationResponseSchema, BookCreationSchema,
-                             BookSchema)
+                             BookSchema, BookUpdateResponseSchema,
+                             BookUpdateSchema)
 
 __all__ = [
     'BaseCreationSchema',
@@ -11,4 +12,6 @@ __all__ = [
     'BookCreationResponseSchema',
     'BookCreationSchema',
     'BookSchema',
+    'BookUpdateResponseSchema',
+    'BookUpdateSchema',
 ]

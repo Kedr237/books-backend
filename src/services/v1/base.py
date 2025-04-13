@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Type, Dict, Any
 
 from fastapi import HTTPException, status
 from sqlalchemy import delete, select
@@ -80,17 +80,17 @@ class BaseManager[TModel: BaseModel](SessionMixin):
         statement = select(self.model).where(self.model.id == id)
         return await self.exists(statement)
 
-    async def update(self, updated_model: TModel) -> TModel | None:
+    async def update(self, id: int, data_to_update: Dict[str, Any]) -> TModel | None:
         try:
-            model_to_update = self.get_by_id(updated_model.id)
+            model_to_update = await self.get_by_id(id)
 
-            for col, value in updated_model.to_dict().items():
+            for col, value in data_to_update.items():
                 if col != 'id':
                     setattr(model_to_update, col, value)
 
             await self.session.commit()
             await self.session.refresh(model_to_update)
-            return model_to_update.to_dict()
+            return model_to_update
         except SQLAlchemyError:
             await self.session.rollback()
             # Add logger.

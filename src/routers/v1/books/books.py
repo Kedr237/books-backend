@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
 from schemas import (BaseResponseSchema, BookCreationResponseSchema,
-                     BookCreationSchema, BookSchema)
+                     BookCreationSchema, BookSchema, BookUpdateResponseSchema, BookUpdateSchema)
 from services import BookService
 
 
@@ -31,3 +31,12 @@ def setup_router(router: APIRouter) -> None:
     ) -> BaseResponseSchema:
         service = BookService(db_session)
         return await service.delete_by_id(id)
+
+    @router.patch('/{id}')
+    async def update_book(
+        id: int,
+        book: BookUpdateSchema = Depends(),
+        db_session: AsyncSession = Depends(get_db_session),
+    ) -> BookUpdateResponseSchema:
+        service = BookService(db_session)
+        return await service.update(id, book)

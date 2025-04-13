@@ -26,7 +26,6 @@ class BaseCreationSchema(BaseSchema):
 
 class BaseUpdateSchema(BaseSchema):
 
-    id: int
     is_available: bool | None = None
 
 
